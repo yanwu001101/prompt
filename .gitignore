@@ -1,0 +1,14 @@
+# assets
+assets/
+*.jpg
+*.png
+*.mp4
+*.zip
+ffmpeg-tmp/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# node
+node_modules/

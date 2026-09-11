@@ -1,0 +1,4 @@
+interface:
+  display_name: "三角洲行动公众号写手"
+  short_description: "用真实赛事和游戏画面制作三角洲复盘、攻略与公众号图文"
+  default_prompt: "使用 $delta-force-wechat-writer 核验近期《三角洲行动》赛事，并制作一篇带真实比赛帧的公众号分析稿。"
