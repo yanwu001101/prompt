@@ -17,8 +17,18 @@ if (!file) {
   process.exit(2);
 }
 
+const stripTail = (t) => {
+  // 末尾 --- 之后的交付说明不算正文，跟 zhuque-check.mjs 保持一致
+  const hr = t.lastIndexOf('\n---');
+  if (hr > 0) {
+    const tail = t.slice(hr);
+    if (tail.length < 1500 && /待审|未检测|授权|建议联系|来源：/.test(tail)) return t.slice(0, hr);
+  }
+  return t;
+};
+
 const stripMd = (t) =>
-  t
+  stripTail(t)
     .replace(/^---[\s\S]*?---\s*/m, '')
     .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
     .replace(/^#+\s.*$/gm, '')

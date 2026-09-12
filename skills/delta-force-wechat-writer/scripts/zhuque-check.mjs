@@ -52,6 +52,15 @@ if (!key) {
 
 // 只测正文：去 frontmatter、图片、标题行、末尾来源行、分隔线
 let text = await readFile(file, 'utf8');
+// 末尾 --- 之后的交付说明（待审/来源/授权）不是可发布正文。它是模板化的公文腔，实测单独成块就是 0.5+，
+// 留在里面会把整篇分数拖上去，还会挤走正文的分块边界。测之前切掉。
+{
+  const hr = text.lastIndexOf('\n---');
+  if (hr > 0) {
+    const tail = text.slice(hr);
+    if (tail.length < 1500 && /待审|未检测|授权|建议联系|来源：/.test(tail)) text = text.slice(0, hr);
+  }
+}
 text = text
   .replace(/^---[\s\S]*?---\s*/m, '')
   .replace(/!\[[^\]]*\]\([^)]*\)/g, '')

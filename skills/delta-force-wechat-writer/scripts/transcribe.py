@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # 用 faster-whisper 把视频音频转成带时间戳的文本，当主播原话素材用。
-# 用法：python transcribe.py audio.m4a [输出.txt] [--model small|medium|large-v3]
+# 用法：python transcribe.py audio.m4a [输出.txt] [--model small|medium|large-v3] [--prompt "专有名词,逗号分隔"]
 # 依赖：pip install faster-whisper（自带解码器，不需要系统 ffmpeg）。第一次跑会下模型。
 
 import sys
@@ -8,9 +8,15 @@ from pathlib import Path
 
 from faster_whisper import WhisperModel
 
+# Windows 控制台默认 GBK，打印中文转写会 UnicodeEncodeError 把整个任务打断（实测过一次）。
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
 if not args:
-    print("Usage: python transcribe.py <audio> [out.txt] [--model small]")
+    print("Usage: python transcribe.py <audio> [out.txt] [--model small] [--prompt '专有名词']")
     sys.exit(2)
 
 audio = Path(args[0])
@@ -19,12 +25,17 @@ model_name = "small"
 if "--model" in sys.argv:
     model_name = sys.argv[sys.argv.index("--model") + 1]
 
+# 每条视频的专有名词不一样，术语喂对了错字会少很多。默认是主播赛那套。
+prompt = "三角洲行动，烽火地带，主播巅峰赛，老飞宇，杰克，撤离，曼德尔砖，大坝，航天基地，巴克什，血氧仪。"
+if "--prompt" in sys.argv:
+    prompt = sys.argv[sys.argv.index("--prompt") + 1]
+
 model = WhisperModel(model_name, device="cpu", compute_type="int8")
 segments, info = model.transcribe(
     str(audio),
     language="zh",
     vad_filter=True,
-    initial_prompt="三角洲行动，烽火地带，主播巅峰赛，老飞宇，杰克，撤离，曼德尔砖，大坝，航天基地，巴克什，血氧仪。",
+    initial_prompt=prompt,
 )
 
 lines = []
@@ -32,6 +43,7 @@ for s in segments:
     m, sec = divmod(int(s.start), 60)
     lines.append(f"[{m:02d}:{sec:02d}] {s.text.strip()}")
     print(lines[-1], flush=True)
+    out.write_text("\n".join(lines), encoding="utf-8")  # 边转边存，中途崩了也有结果
 
 out.write_text("\n".join(lines), encoding="utf-8")
 print(f"\n{len(lines)} 段 -> {out}")
