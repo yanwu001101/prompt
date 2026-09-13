@@ -34,7 +34,7 @@ description: 为中文微信公众号《三角洲行动观察室》写赛事复�
         没到硬线：conf 最高那块按"口语串"整块重写，另存 vN+1，再测；最多 4 轮
         脚本报"没找到 ZHUQUE_API_KEY"：停。不要凭感觉改稿迭代，把稿子标"未检测"交付，告诉用户把 .env.example 复制成 .env 填 key 后再测
 - [ ] 8 node scripts/text-stats.mjs 稿子.md --raw 素材.md 看形状（参考，不是闸门）
-- [ ] 9 配图：真实局内帧（带 HUD），去平台水印留赛事 UI（visual-production.md）
+- [ ] 9 配图：真实局内帧（带 HUD），去平台水印留赛事 UI（visual-production.md）；封面按 visual-production.md「公众号封面」出 1620×690 + 1080×1080 无文字版（平台会自己叠标题；先在整帧坐标去水印再裁切）
 - [ ] 10 交付源稿 + node scripts/embed-markdown-images.mjs 生成单文件版；标"待审"；列出所有"我"的反应句让用户确认
 - [ ] 11 每版的两行 --log 记进 detection-log.md；用户反馈写回 editorial-memory.md
 ```
